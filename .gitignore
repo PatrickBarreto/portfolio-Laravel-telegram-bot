@@ -1,0 +1,4 @@
+dataBase/
+composer.json
+composer.lock
+vendor/

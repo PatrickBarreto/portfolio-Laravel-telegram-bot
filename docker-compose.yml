@@ -1,0 +1,49 @@
+version: "3"
+
+networks:
+  backend_bot:
+
+services:
+  nginx_bot:
+    networks: 
+      - backend_bot
+    container_name: nginx_bot
+    image: nginx:alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - ./api:/usr/share/nginx/html
+      
+  php_app_8_bot:
+    networks: 
+      - backend_bot
+    container_name: php_app_8_bot
+    build: .
+    volumes:
+      - ./api/bot_telegram:/usr/share/nginx/html
+    environment:
+      MYSQL_CONECTION: 'mysql'
+      MYSQL_HOST: 'mariadb_bot'
+      MYSQL_PORT: '3309:3306'
+      MYSQL_DATABASE: 'bot'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'toor'
+    command: /bin/sh -c "cd /usr/share/nginx/html"
+
+  mariadb_bot:
+    networks: 
+      - backend_bot
+    container_name: mariadb_bot
+    image: mariadb:10
+    restart: always
+    ports: 
+      - "3309:3306"
+    environment:
+      MYSQL_DATABASE: 'bot'
+      MYSQL_ROOT_USER: 'root'
+      MYSQL_ROOT_PASSWORD: 'toor'
+      MYSQL_PASSWORD: 'toor'
+    volumes: 
+      - ./dataBase:/var/lib/mysql
+
